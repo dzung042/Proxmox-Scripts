@@ -152,5 +152,6 @@ init
 get_image
 enable_cpu_hotplug
 install_qemu_agent
+pre_config_default
 reset_machine_id
 create_vm_tmpl
