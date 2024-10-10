@@ -35,7 +35,7 @@ print_ok () {
 }
 
 # Default values
-df_os_ver="Centos7"
+df_os_ver="almalinux9"
 df_vm_tmpl_id="9000"
 df_vm_tmpl_name="ubuntu-2404"
 df_vm_username="root"
@@ -50,3 +50,8 @@ df_os_alma8="https://repo.almalinux.org/almalinux/8/cloud/x86_64/images/AlmaLinu
 df_os_alma9="https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/AlmaLinux-9-GenericCloud-latest.x86_64.qcow2"
 df_os_rocky8="https://dl.rockylinux.org/pub/rocky/8/images/x86_64/Rocky-8-GenericCloud-Base.latest.x86_64.qcow2"
 df_os_rocky9="https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud-Base.latest.x86_64.qcow2"
+
+# Prompt for user input
+read -p "Enter OS (default: ${df_os_ver}): " os_ver
+os_ver="${os_ver:-$df_os_ver}"
+
