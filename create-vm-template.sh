@@ -38,6 +38,10 @@ print_ok () {
 df_ubuntu_ver="24.04"
 df_vm_tmpl_id="9000"
 df_vm_tmpl_name="ubuntu-2404"
+df_vm_username="root"
+df_vm_password="password"
+df_vm_sshkey=""
+df_vm_timezone="Asia/Ho_Chi_Minh"
 
 # Prompt for user input
 read -p "Enter Ubuntu version (default: ${df_ubuntu_ver}): " ubuntu_ver
@@ -115,7 +119,7 @@ install_qemu_agent () {
 
 pre_config_default () {
     echo -n "Set Time Zone..."
-    run_cmd "virt-customize -a $ubuntu_img_filename --timezone Asia/Ho_Chi_Minh"
+    run_cmd "virt-customize -a $ubuntu_img_filename --timezone $df_vm_timezone"
     echo -n "Set password auth to yes"
     run_cmd "virt-customize -a $ubuntu_img_filename --run-command 'sed -i s/^PasswordAuthentication.*/PasswordAuthentication\ yes/ /etc/ssh/sshd_config'"
     run_cmd "virt-customize -a $ubuntu_img_filename --run-command 'sed -i s/^#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config'"
@@ -135,6 +139,13 @@ create_vm_tmpl () {
     run_cmd "qm set $vm_tmpl_id --virtio0 $vm_disk_storage:0,import-from=$script_tmp_path/$ubuntu_img_filename"
     run_cmd "qm set $vm_tmpl_id --boot c --bootdisk virtio0"
     run_cmd "qm set $vm_tmpl_id --ide2 $vm_disk_storage:cloudinit"
+    # Set user/password
+    echo "Setting cloud-init user and password..."
+    if [ ! -f "$df_vm_sshkey" ]; then
+        echo "$df_vm_sshkey" > /tmp/sshkeys
+        df_vm_sshkey=/tmp/sshkeys
+    fi
+    qm set $vm_tmpl_id --ciuser "$df_vm_username" ${PASSWORD:+--cipassword "$df_vm_password"} ${SSHKEYS:+--sshkeys "$df_vm_sshkey"}
     run_cmd "qm set $vm_tmpl_id --serial0 socket --vga serial0"
     run_cmd "qm set $vm_tmpl_id --agent enabled=1,fstrim_cloned_disks=1"
     run_cmd "qm template $vm_tmpl_id"
